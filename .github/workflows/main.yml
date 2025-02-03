@@ -3,16 +3,41 @@ name: Send Safe Move Message
 on:
   push:
     branches:
-      - main  # 触发条件是推送到main分支时
+      - main  # 当推送到 main 分支时触发
 
 jobs:
   send_message:
-    runs-on: ubuntu-latest  # 使用ubuntu环境
+    runs-on: ubuntu-latest  # 使用 Ubuntu 环境
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2  # 拉取代码
 
-      - name: Run send message script
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'  # 使用 Node.js 16 版本
+
+      - name: Install dependencies
+        run: npm install axios  # 安装 Axios 库，用于发送 HTTP 请求
+
+      - name: Send message via wxpusher
         run: |
-          echo "发送消息功能"
-          # 在这里填写你自己的发送消息的命令或者逻辑
+          const axios = require('axios');
+          const appToken = process.env.WX_PUSHER_TOKEN;  # 从 GitHub Secrets 获取 appToken
+          const uids = process.env.WX_PUSHER_UID.split(',');  # 从 GitHub Secrets 获取 uids（多个 UID 用逗号分隔）
+
+          // 发送请求到 wxpusher API
+          axios.post('https://wxpusher.zjiecode.com/api/send/message', {
+            appToken,
+            content: '【安全挪车】您的车辆需要移动，安全联系方式：12345678900',  # 这里可以根据实际输入的手机号动态替换
+            uids: uids
+          })
+          .then(response => {
+            console.log('Message sent successfully:', response.data);
+          })
+          .catch(error => {
+            console.error('Error sending message:', error);
+          });
+        env:
+          WX_PUSHER_TOKEN: ${{ secrets.WX_PUSHER_TOKEN }}  # 从 GitHub Secrets 获取
+          WX_PUSHER_UID: ${{ secrets.WX_PUSHER_UID }}  # 从 GitHub Secrets 获取
