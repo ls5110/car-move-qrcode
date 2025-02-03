@@ -17,9 +17,6 @@ jobs:
         with:
           node-version: '16'  # 使用 Node.js 16 版本
 
-      - name: Install dependencies
-        run: npm install axios  # 安装 Axios 库，用于发送 HTTP 请求
-
       - name: Send message via wxpusher
         run: |
           const axios = require('axios');
@@ -38,6 +35,7 @@ jobs:
           .catch(error => {
             console.error('发送消息时出错：', error);
           });
+
 
         env:
           WX_PUSHER_TOKEN: ${{ secrets.WX_PUSHER_TOKEN }}  # 从 GitHub Secrets 获取
