@@ -23,21 +23,22 @@ jobs:
       - name: Send message via wxpusher
         run: |
           const axios = require('axios');
-          const appToken = process.env.WX_PUSHER_TOKEN;  # 从 GitHub Secrets 获取 appToken
-          const uids = process.env.WX_PUSHER_UID.split(',');  # 从 GitHub Secrets 获取 uids（多个 UID 用逗号分隔）
+          const appToken = process.env.WX_PUSHER_TOKEN; // 从 GitHub Secrets 获取 appToken
+          const uids = process.env.WX_PUSHER_UID.split(','); // 从 GitHub Secrets 获取 uids（多个 UID 用逗号分隔）
 
           // 发送请求到 wxpusher API
           axios.post('https://wxpusher.zjiecode.com/api/send/message', {
             appToken,
-            content: '【安全挪车】您的车辆需要移动，安全联系方式：12345678900',  # 这里可以根据实际输入的手机号动态替换
-            uids: uids
+            content: '【安全挪车】您的车辆需要移动，安全联系方式：12345678900',  // 这里可以根据实际输入的手机号动态替换
+            uids: uids  // 注意这里用的是 uids，而不是 UID
           })
           .then(response => {
-            console.log('Message sent successfully:', response.data);
+            console.log('消息发送成功：', response.data);
           })
           .catch(error => {
-            console.error('Error sending message:', error);
+            console.error('发送消息时出错：', error);
           });
+
         env:
           WX_PUSHER_TOKEN: ${{ secrets.WX_PUSHER_TOKEN }}  # 从 GitHub Secrets 获取
           WX_PUSHER_UID: ${{ secrets.WX_PUSHER_UID }}  # 从 GitHub Secrets 获取
